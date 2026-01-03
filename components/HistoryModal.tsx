@@ -33,7 +33,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ history, palette, onClose, 
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/40 backdrop-blur-md p-4">
       <div className={`relative max-w-md w-full max-h-[80vh] ${palette.card} flex flex-col rounded-[2.5rem] shadow-2xl border border-white/20 animate-in fade-in zoom-in duration-300`}>
         <div className="p-6 md:p-8 flex items-center justify-between border-b border-white/5">
-          <h3 className={`text-xl font-serif italic ${palette.text}`}>Focus History</h3>
+          <h3 className={`text-xl font-serif italic ${palette.text}`}>Study Archive</h3>
           <button 
             onClick={onClose}
             className={`p-2 rounded-full hover:bg-black/5 transition-colors ${palette.text}`}
@@ -45,7 +45,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ history, palette, onClose, 
         <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-4">
           {history.length === 0 ? (
             <div className={`text-center py-12 ${palette.subtleText} opacity-40 italic text-sm`}>
-              No sessions recorded yet. Start your journey!
+              Your journey is just beginning. Start your first session.
             </div>
           ) : (
             history.slice().reverse().map((item) => (
@@ -56,7 +56,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ history, palette, onClose, 
                   </div>
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-widest ${palette.text}`}>
-                      {item.type === 'work' ? 'Focus Session' : 'Rest Break'}
+                      {item.type === 'work' ? 'Deep Session' : 'Active Rest'}
                     </p>
                     <p className={`text-[10px] ${palette.subtleText} flex items-center gap-1 mt-0.5`}>
                       <Calendar size={10} /> {formatDate(item.timestamp)}
@@ -77,13 +77,13 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ history, palette, onClose, 
             disabled={history.length === 0}
             className={`flex-1 py-3.5 rounded-2xl border border-white/10 ${palette.text} text-[10px] font-bold tracking-widest uppercase opacity-40 hover:opacity-100 disabled:opacity-10 transition-all flex items-center justify-center gap-2`}
           >
-            <Trash2 size={14} /> Clear Log
+            <Trash2 size={14} /> Clear Logs
           </button>
           <button
             onClick={onClose}
             className={`flex-[2] py-3.5 rounded-2xl ${palette.accent} text-white text-[10px] font-bold tracking-widest uppercase shadow-lg transform active:scale-95 transition-all`}
           >
-            Close
+            Return
           </button>
         </div>
       </div>

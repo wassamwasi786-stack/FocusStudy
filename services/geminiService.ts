@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
 let ai: GoogleGenAI | null = null;
@@ -21,7 +22,7 @@ export async function fetchMotivationalQuote(sessionType: string) {
     console.warn("Gemini API key not found, using fallback quotes.");
     return {
       text: isWork ? "Focus is the art of knowing what to ignore." : "Rest is the foundation of every great achievement.",
-      author: "FocusStudy"
+      author: "StudyInFocus"
     };
   }
 
@@ -40,7 +41,7 @@ export async function fetchMotivationalQuote(sessionType: string) {
             },
             author: {
               type: Type.STRING,
-              description: "The author or 'FocusStudy' if anonymous.",
+              description: "The author or 'StudyInFocus' if anonymous.",
             },
           },
           required: ["text", "author"],
@@ -55,7 +56,7 @@ export async function fetchMotivationalQuote(sessionType: string) {
     console.error("Gemini Error:", error);
     return {
       text: isWork ? "Focus is the art of knowing what to ignore." : "Rest is the foundation of every great achievement.",
-      author: "FocusStudy"
+      author: "StudyInFocus"
     };
   }
 }

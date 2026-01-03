@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Play, Pause, RotateCcw, Settings, Clock, Sparkles, SkipForward, Brain, Coffee, Trees, Palette as PaletteIcon, Eraser, Maximize, Minimize, Award, Quote, ChevronRight, Loader2, Type as TypeIcon } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -15,33 +16,33 @@ const App: React.FC = () => {
   // --- PERSISTENCE ---
   const [theme, setTheme] = useState<ThemeType>(() => {
     try {
-      return (localStorage.getItem('auraTheme') as ThemeType) || 'dark';
+      return (localStorage.getItem('studyTheme') as ThemeType) || 'dark';
     } catch { return 'dark'; }
   });
   
   const [clockStyle, setClockStyle] = useState<ClockStyle>(() => {
     try {
-      return (localStorage.getItem('auraClockStyle') as ClockStyle) || 'serif';
+      return (localStorage.getItem('studyClockStyle') as ClockStyle) || 'serif';
     } catch { return 'serif'; }
   });
   
   const [durations, setDurations] = useState<SessionDurations>(() => {
     try {
-      const saved = localStorage.getItem('auraDurations');
+      const saved = localStorage.getItem('studyDurations');
       return saved ? JSON.parse(saved) : SESSION_DURATIONS;
     } catch { return SESSION_DURATIONS; }
   });
   
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     try {
-      const saved = localStorage.getItem('auraHistory');
+      const saved = localStorage.getItem('studyHistory');
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
   
   const [customParticleColor, setCustomParticleColor] = useState<string | null>(() => {
     try {
-      return localStorage.getItem('auraParticleColor');
+      return localStorage.getItem('studyParticleColor');
     } catch { return null; }
   });
 
@@ -54,14 +55,14 @@ const App: React.FC = () => {
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
   const [quote, setQuote] = useState<{ text: string; author: string } | null>(null);
   const [liveQuote, setLiveQuote] = useState<{ text: string; author: string }>({
-    text: "Patience and focus are the dual wings of progress.",
-    author: "FocusStudy"
+    text: "Focus is the ultimate competitive advantage.",
+    author: "StudyInFocus"
   });
 
   const [timerState, setTimerState] = useState<TimerState>(() => {
     let savedProgress = 0;
     try {
-      savedProgress = parseInt(localStorage.getItem('auraProgress') || '0');
+      savedProgress = parseInt(localStorage.getItem('studyProgress') || '0');
     } catch { savedProgress = 0; }
     
     return {
@@ -78,13 +79,13 @@ const App: React.FC = () => {
 
   // --- SYNC ---
   useEffect(() => {
-    localStorage.setItem('auraTheme', theme);
-    localStorage.setItem('auraClockStyle', clockStyle);
-    localStorage.setItem('auraDurations', JSON.stringify(durations));
-    localStorage.setItem('auraProgress', timerState.sessionsCompleted.toString());
-    localStorage.setItem('auraHistory', JSON.stringify(history));
-    if (customParticleColor) localStorage.setItem('auraParticleColor', customParticleColor);
-    else localStorage.removeItem('auraParticleColor');
+    localStorage.setItem('studyTheme', theme);
+    localStorage.setItem('studyClockStyle', clockStyle);
+    localStorage.setItem('studyDurations', JSON.stringify(durations));
+    localStorage.setItem('studyProgress', timerState.sessionsCompleted.toString());
+    localStorage.setItem('studyHistory', JSON.stringify(history));
+    if (customParticleColor) localStorage.setItem('studyParticleColor', customParticleColor);
+    else localStorage.removeItem('studyParticleColor');
   }, [theme, clockStyle, durations, timerState.sessionsCompleted, history, customParticleColor]);
 
   // --- INITIAL QUOTE & MOBILE FS ---
@@ -305,7 +306,7 @@ const App: React.FC = () => {
   };
 
   const clearHistory = () => {
-    if (window.confirm("Are you sure you want to clear your FocusStudy history?")) {
+    if (window.confirm("Are you sure you want to clear your StudyInFocus history?")) {
       setHistory([]);
       setTimerState(prev => ({ ...prev, sessionsCompleted: 0 }));
     }
@@ -335,10 +336,10 @@ const App: React.FC = () => {
       <nav className="w-full px-6 md:px-12 flex justify-between items-start z-20 mt-4 md:mt-8">
         <div className="group cursor-default">
           <h1 className={`text-xl md:text-3xl font-serif italic ${palette.text} opacity-90 flex items-center gap-3 group-hover:opacity-100 transition-opacity`}>
-             <Sparkles size={24} className="text-yellow-400 animate-pulse" /> FocusStudy
+             <Sparkles size={24} className="text-yellow-400 animate-pulse" /> StudyInFocus
           </h1>
           <p className={`text-[8px] md:text-[10px] uppercase tracking-[0.4em] ${palette.subtleText} ml-9 md:ml-10 opacity-50 group-hover:opacity-100 transition-opacity`}>
-            Serenity in Focus
+            Deep Work. Pure Focus.
           </p>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
@@ -367,7 +368,7 @@ const App: React.FC = () => {
             <div className="space-y-7">
               <section>
                 <h4 className={`text-[10px] uppercase tracking-[0.2em] ${palette.subtleText} mb-4 font-bold flex items-center gap-2`}>
-                  <PaletteIcon size={14} /> Palette Selection
+                  <PaletteIcon size={14} /> Style Selection
                 </h4>
                 <div className="grid grid-cols-2 gap-2.5 max-h-48 overflow-y-auto pr-1">
                   {(Object.keys(THEMES) as ThemeType[]).map(t => (
@@ -431,7 +432,7 @@ const App: React.FC = () => {
 
               <section>
                 <h4 className={`text-[10px] uppercase tracking-[0.2em] ${palette.subtleText} mb-4 font-bold flex items-center gap-2`}>
-                  <Clock size={14} /> Duration Tuning (min)
+                  <Clock size={14} /> Sessions (min)
                 </h4>
                 <div className="space-y-3">
                   {['work', 'short-break', 'long-break'].map(sid => (
@@ -453,7 +454,7 @@ const App: React.FC = () => {
                 onClick={() => setShowSettings(false)} 
                 className={`w-full py-4 rounded-2xl ${palette.accent} text-white text-[11px] shadow-xl font-bold tracking-[0.25em] uppercase hover:brightness-110 active:scale-95 transition-all`}
               >
-                Apply Changes
+                Apply Configuration
               </button>
             </div>
           </div>
@@ -475,8 +476,8 @@ const App: React.FC = () => {
                 `}
               >
                 {getSessionIcon(type, 14)}
-                <span className="hidden xs:inline">{type === 'work' ? 'Focus' : type === 'short-break' ? 'Short' : 'Long'}</span>
-                <span className="xs:hidden">{type === 'work' ? 'F' : type === 'short-break' ? 'S' : 'L'}</span>
+                <span className="hidden xs:inline">{type === 'work' ? 'Deep Work' : type === 'short-break' ? 'Short' : 'Long'}</span>
+                <span className="xs:hidden">{type === 'work' ? 'W' : type === 'short-break' ? 'S' : 'L'}</span>
               </button>
             ))}
           </div>
@@ -490,20 +491,20 @@ const App: React.FC = () => {
             <div className={`w-full h-full flex flex-col items-center justify-center transition-all duration-1000 ${isTransitioning ? 'opacity-0 scale-90 blur-md' : 'opacity-100 scale-100 blur-0'}`}>
               <BreakAnimation type={timerState.currentSession} palette={palette} />
 
-              <div className={`relative z-10 space-y-4 md:space-y-6 transition-all duration-1000 ${timerState.isActive ? 'translate-y-[-10px]' : 'translate-y-0'}`}>
-                <div className={`flex justify-center opacity-40 animate-float`}>
+              <div className={`relative z-10 flex flex-col items-center transition-all duration-1000 ${timerState.isActive ? 'translate-y-[-15px]' : 'translate-y-[-5px]'}`}>
+                <div className={`flex justify-center opacity-40 animate-float mb-6 md:mb-10`}>
                   {getSessionIcon(timerState.currentSession, 48)}
                 </div>
-                <p className={`text-[9px] md:text-[11px] tracking-[0.5em] md:tracking-[0.7em] uppercase font-black ${palette.subtleText} transition-all duration-1000 ${timerState.isActive ? 'opacity-20 scale-90' : 'opacity-100'}`}>
-                  {timerState.currentSession === 'work' ? 'Immersive Deep Work' : 'Conscious Rest'}
+                <p className={`text-[9px] md:text-[11px] tracking-[0.5em] md:tracking-[0.7em] uppercase font-black ${palette.subtleText} transition-all duration-1000 ${timerState.isActive ? 'opacity-20 scale-90' : 'opacity-100'} mb-4`}>
+                  {timerState.currentSession === 'work' ? 'Pure Immersion' : 'Active Recovery'}
                 </p>
-                <h2 className={`text-7xl xs:text-8xl md:text-[10rem] ${getClockFontClass()} select-none transition-all duration-1000 leading-none ${palette.text} drop-shadow-xl`}>
+                <h2 className={`text-7xl xs:text-8xl md:text-[10rem] ${getClockFontClass()} select-none transition-all duration-1000 leading-none ${palette.text} drop-shadow-xl mb-12 md:mb-20`}>
                   {formatTime(timerState.secondsRemaining)}
                 </h2>
               </div>
 
-              {/* Timer Controls */}
-              <div className="absolute bottom-12 md:bottom-14 flex items-center space-x-8 md:space-x-12 z-20">
+              {/* Timer Controls - Added significant gap between time and buttons */}
+              <div className="absolute bottom-8 md:bottom-12 flex items-center space-x-8 md:space-x-12 z-20">
                 <button 
                   aria-label="Reset Session"
                   onClick={() => { setTimerState(p => ({...p, isActive: false, secondsRemaining: durations[p.currentSession]})); }} 
@@ -545,7 +546,7 @@ const App: React.FC = () => {
                 <div className="flex flex-col items-center justify-center py-6 animate-pulse">
                   <Loader2 className={`w-8 h-8 animate-spin ${palette.text} opacity-20`} />
                   <p className={`text-[10px] md:text-[11px] uppercase tracking-[0.4em] mt-6 ${palette.subtleText} opacity-50 font-black`}>
-                    Curating Wisdom
+                    Syncing Focus
                   </p>
                 </div>
               ) : (
@@ -608,27 +609,27 @@ const App: React.FC = () => {
           
           <div className="space-y-6 text-center md:text-left sm:col-span-2 md:col-span-1">
             <h2 className={`text-2xl md:text-3xl font-serif italic ${palette.text} flex items-center gap-3 justify-center md:justify-start`}>
-               <Sparkles size={24} className="text-yellow-500" /> FocusStudy
+               <Sparkles size={24} className="text-yellow-500" /> StudyInFocus
             </h2>
             <p className={`text-xs md:text-sm leading-relaxed ${palette.subtleText} opacity-60 max-w-sm mx-auto md:mx-0`}>
-              FocusStudy is a refined productivity sanctuary. Built for those who find beauty in discipline and calm in the chaos of modern study.
+              StudyInFocus is a premium ritualistic workspace for deep concentration. Built for those who treat focus as a craft.
             </p>
           </div>
 
           <div className="space-y-6 text-center md:text-left">
-            <h3 className={`text-[11px] uppercase tracking-[0.4em] font-black ${palette.text} opacity-90`}>The Ritual</h3>
+            <h3 className={`text-[11px] uppercase tracking-[0.4em] font-black ${palette.text} opacity-90`}>The Method</h3>
             <ul className={`flex flex-col gap-4 text-xs ${palette.subtleText} opacity-50`}>
-              <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">Aesthetic Philosophy</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">Our Studio</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">Deep Work Protocol</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">Focus Physics</a></li>
               <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">Journal</a></li>
             </ul>
           </div>
 
           <div className="space-y-6 text-center md:text-left">
-            <h3 className={`text-[11px] uppercase tracking-[0.4em] font-black ${palette.text} opacity-90`}>Archive</h3>
+            <h3 className={`text-[11px] uppercase tracking-[0.4em] font-black ${palette.text} opacity-90`}>Tools</h3>
             <ul className={`flex flex-col gap-4 text-xs ${palette.subtleText} opacity-50`}>
-              <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">Methodology</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">AI Integration</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">Concentration Guide</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">AI Mentor</a></li>
               <li><a href="#" className="hover:opacity-100 transition-opacity hover:translate-x-1 inline-block duration-300">Sustainability</a></li>
             </ul>
           </div>
@@ -637,11 +638,11 @@ const App: React.FC = () => {
         <div className="mt-20 md:mt-28 pt-10 border-t border-white/10 text-center px-8">
           <div className="flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto gap-8">
             <div className={`text-[9px] md:text-[10px] uppercase tracking-[0.5em] ${palette.subtleText} opacity-30`}>
-              © 2024 FocusStudy Collective &bull; Premium Productivity Tool
+              © 2024 StudyInFocus Collective &bull; Elite Productivity Tool
             </div>
             <div className="flex items-center gap-6 opacity-20">
               <span className="h-[1px] w-12 bg-current"></span>
-              <span className="text-[8px] uppercase tracking-[0.4em]">Presence • Flow • Peace</span>
+              <span className="text-[8px] uppercase tracking-[0.4em]">Concentrate • Execute • Perfect</span>
               <span className="h-[1px] w-12 bg-current"></span>
             </div>
           </div>
