@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Palette } from '../types';
 
@@ -38,17 +37,17 @@ const Background: React.FC<BackgroundProps> = ({ palette, isHovered = false, par
       constructor(width: number, height: number) {
         this.x = Math.random() * width;
         this.y = Math.random() * height;
-        this.baseSize = Math.random() * 3 + 1;
+        this.baseSize = Math.random() * 2 + 0.5;
         this.size = this.baseSize;
-        this.speedX = (Math.random() * 0.4 - 0.2);
-        this.speedY = (Math.random() * 0.4 - 0.2);
+        this.speedX = (Math.random() * 0.3 - 0.15);
+        this.speedY = (Math.random() * 0.3 - 0.15);
       }
 
       update(width: number, height: number, multiplier: number) {
         this.x += this.speedX * multiplier;
         this.y += this.speedY * multiplier;
 
-        const targetSize = multiplier > 1.5 ? this.baseSize * 1.4 : this.baseSize;
+        const targetSize = multiplier > 1.5 ? this.baseSize * 1.5 : this.baseSize;
         this.size += (targetSize - this.size) * 0.05;
 
         if (this.x > width) this.x = 0;
@@ -68,8 +67,10 @@ const Background: React.FC<BackgroundProps> = ({ palette, isHovered = false, par
 
     const init = () => {
       particles = [];
-      const particleCount = 70;
-      for (let i = 0; i < particleCount; i++) {
+      // Adjust density based on screen size
+      const area = canvas.width * canvas.height;
+      const particleCount = Math.floor(area / 15000);
+      for (let i = 0; i < Math.min(particleCount, 120); i++) {
         particles.push(new Particle(canvas.width, canvas.height));
       }
     };
@@ -77,8 +78,8 @@ const Background: React.FC<BackgroundProps> = ({ palette, isHovered = false, par
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      const targetMultiplier = isHoveredRef.current ? 5.0 : 1.0;
-      speedMultiplier.current += (targetMultiplier - speedMultiplier.current) * 0.04;
+      const targetMultiplier = isHoveredRef.current ? 4.5 : 1.0;
+      speedMultiplier.current += (targetMultiplier - speedMultiplier.current) * 0.03;
 
       particles.forEach(p => {
         p.update(canvas.width, canvas.height, speedMultiplier.current);
@@ -88,8 +89,15 @@ const Background: React.FC<BackgroundProps> = ({ palette, isHovered = false, par
     };
 
     const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // Support for High DPI displays
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.scale(dpr, dpr);
+      
+      // Pass the visible CSS dimensions for particle boundaries
       init();
     };
 
@@ -107,7 +115,7 @@ const Background: React.FC<BackgroundProps> = ({ palette, isHovered = false, par
     <>
       <div 
         className="fixed inset-0 z-[-2] transition-all duration-[2000ms] ease-in-out"
-        style={{ background: palette.gradient, backgroundSize: '200% 200%', animation: 'gradientMove 15s ease infinite' }}
+        style={{ background: palette.gradient, backgroundSize: '200% 200%', animation: 'gradientMove 20s ease infinite' }}
       />
       <canvas 
         ref={canvasRef} 

@@ -14,21 +14,35 @@ import { fetchMotivationalQuote } from './services/geminiService';
 const App: React.FC = () => {
   // --- PERSISTENCE ---
   const [theme, setTheme] = useState<ThemeType>(() => {
-    return (localStorage.getItem('auraTheme') as ThemeType) || 'dark';
+    try {
+      return (localStorage.getItem('auraTheme') as ThemeType) || 'dark';
+    } catch { return 'dark'; }
   });
+  
   const [clockStyle, setClockStyle] = useState<ClockStyle>(() => {
-    return (localStorage.getItem('auraClockStyle') as ClockStyle) || 'serif';
+    try {
+      return (localStorage.getItem('auraClockStyle') as ClockStyle) || 'serif';
+    } catch { return 'serif'; }
   });
+  
   const [durations, setDurations] = useState<SessionDurations>(() => {
-    const saved = localStorage.getItem('auraDurations');
-    return saved ? JSON.parse(saved) : SESSION_DURATIONS;
+    try {
+      const saved = localStorage.getItem('auraDurations');
+      return saved ? JSON.parse(saved) : SESSION_DURATIONS;
+    } catch { return SESSION_DURATIONS; }
   });
+  
   const [history, setHistory] = useState<HistoryItem[]>(() => {
-    const saved = localStorage.getItem('auraHistory');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('auraHistory');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
   });
+  
   const [customParticleColor, setCustomParticleColor] = useState<string | null>(() => {
-    return localStorage.getItem('auraParticleColor');
+    try {
+      return localStorage.getItem('auraParticleColor');
+    } catch { return null; }
   });
 
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -44,11 +58,18 @@ const App: React.FC = () => {
     author: "FocusStudy"
   });
 
-  const [timerState, setTimerState] = useState<TimerState>({
-    secondsRemaining: durations.work,
-    isActive: false,
-    currentSession: 'work',
-    sessionsCompleted: parseInt(localStorage.getItem('auraProgress') || '0')
+  const [timerState, setTimerState] = useState<TimerState>(() => {
+    let savedProgress = 0;
+    try {
+      savedProgress = parseInt(localStorage.getItem('auraProgress') || '0');
+    } catch { savedProgress = 0; }
+    
+    return {
+      secondsRemaining: durations.work,
+      isActive: false,
+      currentSession: 'work',
+      sessionsCompleted: savedProgress
+    };
   });
 
   const timerRef = useRef<number | null>(null);
@@ -56,15 +77,15 @@ const App: React.FC = () => {
   const palette = THEMES[theme];
 
   // --- SYNC ---
-  useEffect(() => localStorage.setItem('auraTheme', theme), [theme]);
-  useEffect(() => localStorage.setItem('auraClockStyle', clockStyle), [clockStyle]);
-  useEffect(() => localStorage.setItem('auraDurations', JSON.stringify(durations)), [durations]);
-  useEffect(() => localStorage.setItem('auraProgress', timerState.sessionsCompleted.toString()), [timerState.sessionsCompleted]);
-  useEffect(() => localStorage.setItem('auraHistory', JSON.stringify(history)), [history]);
   useEffect(() => {
+    localStorage.setItem('auraTheme', theme);
+    localStorage.setItem('auraClockStyle', clockStyle);
+    localStorage.setItem('auraDurations', JSON.stringify(durations));
+    localStorage.setItem('auraProgress', timerState.sessionsCompleted.toString());
+    localStorage.setItem('auraHistory', JSON.stringify(history));
     if (customParticleColor) localStorage.setItem('auraParticleColor', customParticleColor);
     else localStorage.removeItem('auraParticleColor');
-  }, [customParticleColor]);
+  }, [theme, clockStyle, durations, timerState.sessionsCompleted, history, customParticleColor]);
 
   // --- INITIAL QUOTE & MOBILE FS ---
   useEffect(() => {
@@ -152,7 +173,6 @@ const App: React.FC = () => {
     setIsTransitioning(true);
     await new Promise(resolve => setTimeout(resolve, 400));
 
-    // Update history before switching state
     const currentSessionType = timerState.currentSession;
     const duration = Math.floor(durations[currentSessionType] / 60);
     
